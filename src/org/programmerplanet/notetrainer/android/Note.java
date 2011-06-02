@@ -1,5 +1,6 @@
 package org.programmerplanet.notetrainer.android;
 
+import java.io.Serializable;
 import java.util.Random;
 
 /**
@@ -7,7 +8,7 @@ import java.util.Random;
  * 
  * Copyright (c) 2011 Joseph Fifield
  */
-public class Note {
+public class Note implements Serializable {
 
 	public static final char FIRST_NOTE = 'A';
 	public static final char LAST_NOTE = 'G';

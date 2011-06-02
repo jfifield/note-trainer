@@ -16,6 +16,12 @@ import android.widget.TextView;
  */
 public class NoteTrainerActivity extends Activity {
 
+	private static final String INSTANCE_STATE_NOTE = "note";
+	private static final String INSTANCE_STATE_STATUS_TEXT = "status_text";
+	private static final String INSTANCE_STATE_STATUS_COLOR = "status_color";
+	private static final String INSTANCE_STATE_ATTEMPTS = "attempts";
+	private static final String INSTANCE_STATE_CORRECT = "correct";
+
 	private MusicStaffView musicStaff;
 	private TextView statusTextView;
 	private TextView progressTextView;
@@ -52,17 +58,48 @@ public class NoteTrainerActivity extends Activity {
 		setRandomNote();
 	}
 
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putSerializable(INSTANCE_STATE_NOTE, musicStaff.getNote());
+		outState.putString(INSTANCE_STATE_STATUS_TEXT, statusTextView.getText().toString());
+		outState.putInt(INSTANCE_STATE_STATUS_COLOR, statusTextView.getTextColors().getDefaultColor());
+		outState.putInt(INSTANCE_STATE_ATTEMPTS, attempts);
+		outState.putInt(INSTANCE_STATE_CORRECT, correct);
+	}
+
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		musicStaff.setNote((Note)savedInstanceState.getSerializable(INSTANCE_STATE_NOTE));
+		statusTextView.setText(savedInstanceState.getString(INSTANCE_STATE_STATUS_TEXT));
+		statusTextView.setTextColor(savedInstanceState.getInt(INSTANCE_STATE_STATUS_COLOR));
+		attempts = savedInstanceState.getInt(INSTANCE_STATE_ATTEMPTS);
+		correct = savedInstanceState.getInt(INSTANCE_STATE_CORRECT);
+		setProgressText();
+	}
+
 	private void answered(char answer) {
 		attempts++;
 		if (answer == musicStaff.getNote().getName()) {
 			correct++;
-			statusTextView.setText(R.string.correct);
-			statusTextView.setTextColor(Color.GREEN);
+			setStatusTextCorrect();
 			setRandomNote();
 		} else {
-			statusTextView.setText(R.string.incorrect);
-			statusTextView.setTextColor(Color.RED);
+			setStatusTextIncorrect();
 		}
+		setProgressText();
+	}
+
+	private void setStatusTextCorrect() {
+		statusTextView.setText(R.string.correct);
+		statusTextView.setTextColor(Color.GREEN);
+	}
+
+	private void setStatusTextIncorrect() {
+		statusTextView.setText(R.string.incorrect);
+		statusTextView.setTextColor(Color.RED);
+	}
+
+	private void setProgressText() {
 		progressTextView.setText(correct + "/" + attempts);
 	}
 
